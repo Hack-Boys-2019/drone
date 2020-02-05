@@ -4,3 +4,6 @@ python:
 before-install:
   - git clone git@github.com:Hack-Boys-2019/crazyflie-lib-python.git
   - ls
+  
+install:
+  - pip install -r requirements.txt
