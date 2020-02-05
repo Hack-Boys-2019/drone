@@ -33,7 +33,6 @@ if __name__ == '__main__':
     with sync as scf:
         with sync_logger as logger:
             cf = scf.cf
-            print("golden")
             cf.param.set_value('kalman.resetEstimation', '1')
             time.sleep(0.1)
             cf.param.set_value('kalman.resetEstimation', '0')
