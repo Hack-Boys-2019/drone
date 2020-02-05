@@ -1,12 +1,15 @@
 import logging
 import time
 import csv
- 
+import unittest
+import sys
+
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crazyflie.syncLogger import SyncLogger
+from unittest.mock import MagicMock
  
 URI = 'radio://0/80/2M'
  
@@ -19,9 +22,16 @@ if __name__ == '__main__':
     lg_stab = LogConfig(name='stateEstimate', period_in_ms=10)
     lg_stab.add_variable('stateEstimate.x', 'float')
     lg_stab.add_variable('stateEstimate.y', 'float')
-       
-    with SyncCrazyflie(URI, cf=Crazyflie(rw_cache='./cache')) as scf:
-        with SyncLogger(scf, lg_stab) as logger:
+    
+    if '-test' in sys.argv:
+        sync = MagicMock(spec=SyncCrazyflie, name=URI)
+        sync_logger = MagicMock(spec=SyncLogger, name='logger-'+URI)
+    else:
+        sync = SyncCrazyflie(URI, cf=Crazyflie(rw_cache='./cache'))
+        sync_logger = SyncLogger(sync, lg_stab)
+
+    with sync as scf:
+        with sync_logger as logger:
             cf = scf.cf
  
             cf.param.set_value('kalman.resetEstimation', '1')
@@ -59,7 +69,7 @@ if __name__ == '__main__':
                 cf.commander.send_hover_setpoint(0,0,0, (10-y) / 25)
                 time.sleep(0.1)
                
-            with open('/home/bitcraze/Documents/flightCoordinates.csv', mode='w') as file:
+            with open('./data/flightCoordinates.csv', mode='w') as file:
                 writer = csv.writer(file, delimiter=',')
                 writer.writerow(['time','X','Y'])
                 for entry in logger:
