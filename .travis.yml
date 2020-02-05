@@ -2,9 +2,9 @@ language: python
 python:
   - "3.5"
 before-install:
-  - git clone https://github.com/Hack-Boys-2019/crazyflie-lib-python
+  - git clone https://github.com/Hack-Boys-2019/crazyflie-lib-python cflib
   - ls
   
 install:
   - pip install -r requirements.txt
-  - pip install -e crazyflie-lib-python/cflib
+  - pip install -e cflib
